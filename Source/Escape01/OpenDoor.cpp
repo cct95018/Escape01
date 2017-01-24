@@ -20,11 +20,7 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 	// ...
-
-	AActor* Owner = GetOwner();
-	FRotator NewRotation = FRotator(0.f, 45.f, 0.f);
-	Owner->SetActorRotation(NewRotation);
-	
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 
@@ -35,10 +31,16 @@ void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompo
 	// ...
 
 	AActor* Owner = GetOwner();
-	
-	FRotator NewRotation = Owner->GetActorRotation() + FRotator(0.f, 1.0f, 0.f);
-	
-	Owner->SetActorRotation(NewRotation);
-	
+	FRotator MaxRotation = FRotator(0.f, OpenAngle, 0.f);
+	if (PressurePlate->IsOverlappingActor(ActorThatOpens)) {
+		if (!Owner->GetActorRotation().Equals(MaxRotation)) {
+			FRotator NewRotation = Owner->GetActorRotation() + FRotator(0.f, 1.0f, 0.f);
+			Owner->SetActorRotation(NewRotation);
+		}
+	}
+	else if (!Owner->GetActorRotation().Equals(FRotator(0.f, 0.f, 0.f))) {
+			FRotator NewRotation = Owner->GetActorRotation() + FRotator(0.f, -1.0f, 0.f);
+			Owner->SetActorRotation(NewRotation);
+		}	
 }
 
