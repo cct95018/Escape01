@@ -6,3 +6,4 @@ Binaries/
 
 Content/StarterContent/
 *.VC.db
+*.opendb
