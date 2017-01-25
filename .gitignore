@@ -4,6 +4,8 @@ Intermediate/
 Saved/
 Binaries/
 
-Content/StarterContent/
+Content/StarterContent/Textures
+Content/StarterContent/HDRI
 *.VC.db
 *.opendb
+*.suo
