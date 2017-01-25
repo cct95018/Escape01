@@ -2,7 +2,7 @@
 #pragma once
 #include "Escape01.h"
 #include "OpenDoor.h"
-
+#define OUT
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor() {
@@ -13,22 +13,17 @@ UOpenDoor::UOpenDoor() {
 	// ...
 }
 
-
 // Called when the game starts
 void UOpenDoor::BeginPlay() {
 	Super::BeginPlay();
 	// ...
 	Door = GetOwner();
-	ActorPlayer = GetWorld()->GetFirstPlayerController()->GetPawn();
-	Timer = GetWorld()->GetTimeSeconds();
 }
-
 
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	Timer = GetWorld()->GetTimeSeconds();
-	if (PressurePlate->IsOverlappingActor(ActorPlayer)) {
+	if (GetTotalMassOnPlate() >= 80 ) {
 		//UE_LOG(LogTemp, Warning, TEXT("plateOn"));
 		if (!Door->GetActorRotation().Equals(FRotator(0.f, OpenAngle, 0.f))) {
 			Door->SetActorRotation(Door->GetActorRotation() + FRotator(0.f, 0.1f, 0.f));
@@ -38,9 +33,6 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	else {
 		Door->SetActorRotation(FRotator(0.f, -90.f, 0.f));
 	}
-	/*	if (GetWorld()->GetTimeSeconds() - LastOpenTime > 1) {
-			SetDoor(0);
-		}*/
 }
 
 void UOpenDoor::SetDoor(int32 i) {
@@ -51,4 +43,16 @@ void UOpenDoor::SetDoor(int32 i) {
 		Door->SetActorRotation(FRotator(0.f, -90.f, 0.f));
 	}*/
 
+}
+
+float UOpenDoor::GetTotalMassOnPlate() {
+	float TotalMass = 0.f;
+	//Create TArray for AActor
+	TArray<AActor*> OverlappingActors;
+	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
+	for (const auto& Actor : OverlappingActors) {
+		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		UE_LOG(LogTemp, Warning, TEXT("%s On Plate"), *Actor->GetName());
+	}
+	return TotalMass;
 }

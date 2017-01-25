@@ -29,10 +29,12 @@ private:
 	ATriggerVolume* PressurePlate;
 	UPROPERTY(EditAnywhere)
 
-	AActor* ActorPlayer;
-	AActor* Door;
 	float DoorCloseDelay = 1.f;
 	float LastOpenTime;
 	float Timer = 0.f;
+
+	AActor* Door;
+	//Return total mass on plate
+	float GetTotalMassOnPlate();
 
 };
