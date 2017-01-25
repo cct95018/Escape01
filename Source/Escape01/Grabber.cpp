@@ -29,6 +29,7 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+	///Get player view point this tick
 	FVector PlayerVPL;
 	FRotator PlayerVPR;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
@@ -36,6 +37,7 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 	);
 	UE_LOG(LogTemp, Warning, TEXT("%s & %s"), *PlayerVPL.ToString(), *PlayerVPR.ToString());
 	FVector LineTracer = PlayerVPL + PlayerVPR.Vector() * Reach;
+	///Draw red tracer
 	DrawDebugLine(
 		GetWorld(),
 		PlayerVPL,
@@ -46,5 +48,19 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 		0.f,
 		1.f
 	);
+	
+	///Ray-cast to reach distance
+	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
+	FHitResult Hit;
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT Hit,
+		PlayerVPL,
+		LineTracer,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParameters
+	);
+	AActor* ActorHit = Hit.GetActor();
+	if (ActorHit)
+		UE_LOG(LogTemp, Warning, TEXT("We are pointing at %s"), *Hit.GetActor()->GetName());
 }
 
