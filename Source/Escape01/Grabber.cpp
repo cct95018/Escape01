@@ -23,7 +23,8 @@ void UGrabber::BeginPlay()
 
 // Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (PhyHandle == nullptr) { return; }
 	if (PhyHandle->GrabbedComponent) {
 		PhyHandle->SetTargetLocation(GetReachLineEnd());
 	}
@@ -55,6 +56,7 @@ void UGrabber::Grab() {
 	auto HitResult = GetFirstBodyInReach();
 	auto Target = HitResult.GetComponent();
 	auto ActorHit = HitResult.GetActor();
+	if (PhyHandle == nullptr) { return; }
 	if (ActorHit) {
 		PhyHandle->GrabComponent(
 			Target,
@@ -66,6 +68,7 @@ void UGrabber::Grab() {
 }
 void UGrabber::Release() {
 	UE_LOG(LogTemp, Warning, TEXT("Grab OFF"));
+	if (PhyHandle == nullptr) { return; }
 	PhyHandle->ReleaseComponent();
 }
 

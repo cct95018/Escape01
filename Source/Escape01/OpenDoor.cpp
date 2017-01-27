@@ -16,43 +16,34 @@ UOpenDoor::UOpenDoor() {
 // Called when the game starts
 void UOpenDoor::BeginPlay() {
 	Super::BeginPlay();
-	// ...
+
 	Door = GetOwner();
+	if (!PressurePlate) {
+		UE_LOG(LogTemp, Warning, TEXT("Missing Plate on "), *Door->GetName());
+	}
 }
 
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (GetTotalMassOnPlate() >= 80 ) {
+	if (GetTotalMassOnPlate() >= 30 ) {
 		//UE_LOG(LogTemp, Warning, TEXT("plateOn"));
-		if (!Door->GetActorRotation().Equals(FRotator(0.f, OpenAngle, 0.f))) {
-			Door->SetActorRotation(Door->GetActorRotation() + FRotator(0.f, 0.1f, 0.f));
-		}
-		LastOpenTime = GetWorld()->GetTimeSeconds();
+		OnOpen.Broadcast();
 	}
 	else {
-		Door->SetActorRotation(FRotator(0.f, -90.f, 0.f));
+		OnClose.Broadcast();
 	}
-}
-
-void UOpenDoor::SetDoor(int32 i) {
-	/*if (i == 1 && !Door->GetActorRotation().Equals(FRotator(0.f, OpenAngle, 0.f))) {
-		Door->SetActorRotation(Door->GetActorRotation() + FRotator(0.f, .5f, 0.f));
-	}
-	else {
-		Door->SetActorRotation(FRotator(0.f, -90.f, 0.f));
-	}*/
-
 }
 
 float UOpenDoor::GetTotalMassOnPlate() {
 	float TotalMass = 0.f;
 	//Create TArray for AActor
 	TArray<AActor*> OverlappingActors;
+	if (!PressurePlate) { return TotalMass; }
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
 	for (const auto& Actor : OverlappingActors) {
 		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
-		UE_LOG(LogTemp, Warning, TEXT("%s On Plate"), *Actor->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("%s On Plate"), *Actor->GetName());
 	}
 	return TotalMass;
 }

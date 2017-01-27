@@ -21,9 +21,10 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 private:
-	float Reach = 100.f;
+	float Reach = 130.f;
 	UPhysicsHandleComponent* PhyHandle = nullptr;
 	UInputComponent* InputComp = nullptr;
+
 	// Ray-cast and grab in reach
 	void Grab();
 	void Release();
